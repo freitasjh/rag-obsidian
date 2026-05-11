@@ -1,0 +1,95 @@
+package br.com.freitasjh.obsidianrag.service;
+
+import br.com.freitasjh.obsidianrag.config.ObsidianConfig;
+import br.com.freitasjh.obsidianrag.model.SearchResult;
+import br.com.freitasjh.obsidianrag.model.VaultDocument;
+import br.com.freitasjh.obsidianrag.obsidian.VaultLoader;
+import br.com.freitasjh.obsidianrag.rag.embeddings.OllamaEmbeddingProvider;
+import br.com.freitasjh.obsidianrag.rag.retriever.InMemoryRetriever;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+@ApplicationScoped
+public class VaultService {
+
+    private static final Logger LOG = Logger.getLogger(VaultService.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Inject
+    ObsidianConfig obsidianConfig;
+
+    @Inject
+    VaultLoader vaultLoader;
+
+    @Inject
+    InMemoryRetriever retriever;
+
+    @Inject
+    OllamaEmbeddingProvider embeddingProvider;
+
+    private final Map<String, String> documentCache = new ConcurrentHashMap<>();
+
+    public List<VaultDocument> loadAllDocuments() {
+        return vaultLoader.loadVault();
+    }
+
+    public Optional<SearchResult> getDocumentByPath(String path) {
+        for (VaultDocument doc : vaultLoader.loadVault()) {
+            if (doc.getPath().equals(path)) {
+                return Optional.of(new SearchResult(
+                        doc.getContent(),
+                        1.0,
+                        doc.getMetadata()
+                ));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<String> listDocumentPaths() {
+        List<VaultDocument> docs = vaultLoader.loadVault();
+        return docs.stream()
+                .map(VaultDocument::getPath)
+                .sorted()
+                .toList();
+    }
+
+    public long getDocumentCount() {
+        return vaultLoader.countMarkdownFiles();
+    }
+
+    public void cacheDocument(String path, String content) {
+        documentCache.put(path, content);
+    }
+
+    public Optional<String> getCachedContent(String path) {
+        return Optional.ofNullable(documentCache.get(path));
+    }
+
+    public Map<String, Object> getDocumentMetadata(String path) {
+        Optional<VaultDocument> doc = vaultLoader.loadVault().stream()
+                .filter(d -> d.getPath().equals(path))
+                .findFirst();
+
+        return doc.map(VaultDocument::getMetadata)
+                .orElse(Map.of());
+    }
+
+    public void writeNote(String path, String content) {
+        Path fullPath = obsidianConfig.vault().path().resolve(path);
+        try {
+            Files.createDirectories(fullPath.getParent());
+            Files.writeString(fullPath, content);
+            LOG.infof("Note written: %s", fullPath);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to write note: " + path, e);
+        }
+    }
+}

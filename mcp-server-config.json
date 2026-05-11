@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "obsidian-rag": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "--network", "rag-obsidian_default",
+        "-v", "/caminho/para/vault:/data/vault",
+        "-e", "OLLAMA_BASE_URL=http://ollama:11434",
+        "obsidian-rag"
+      ]
+    }
+  }
+}
