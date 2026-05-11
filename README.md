@@ -17,6 +17,7 @@ MCP (Model Context Protocol) server para buscar, ler e escrever notas no Obsidia
 ## Pré-requisitos
 
 - Java 21+
+- Quarkus 3.18.1
 - Docker
 - Ollama com modelo `nomic-embed-text`
 
