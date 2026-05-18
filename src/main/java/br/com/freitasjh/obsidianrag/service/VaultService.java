@@ -4,35 +4,27 @@ import br.com.freitasjh.obsidianrag.config.ObsidianConfig;
 import br.com.freitasjh.obsidianrag.model.SearchResult;
 import br.com.freitasjh.obsidianrag.model.VaultDocument;
 import br.com.freitasjh.obsidianrag.obsidian.VaultLoader;
-import br.com.freitasjh.obsidianrag.rag.embeddings.OllamaEmbeddingProvider;
-import br.com.freitasjh.obsidianrag.rag.retriever.InMemoryRetriever;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class VaultService {
 
     private static final Logger LOG = Logger.getLogger(VaultService.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
     ObsidianConfig obsidianConfig;
 
     @Inject
     VaultLoader vaultLoader;
-
-    @Inject
-    InMemoryRetriever retriever;
-
-    @Inject
-    OllamaEmbeddingProvider embeddingProvider;
 
     private final Map<String, String> documentCache = new ConcurrentHashMap<>();
 

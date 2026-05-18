@@ -14,8 +14,7 @@ public class ParsedMarkdown {
     private List<String> wikiLinks;
     private String title;
 
-    public ParsedMarkdown() {
-    }
+    public ParsedMarkdown() { }
 
     public ParsedMarkdown(String contentWithoutFrontmatter, Map<String, Object> frontmatter,
                           List<Heading> headings, List<String> tags, List<String> wikiLinks, String title) {
@@ -27,53 +26,18 @@ public class ParsedMarkdown {
         this.title = title;
     }
 
-    public String getContentWithoutFrontmatter() {
-        return contentWithoutFrontmatter;
-    }
-
-    public void setContentWithoutFrontmatter(String contentWithoutFrontmatter) {
-        this.contentWithoutFrontmatter = contentWithoutFrontmatter;
-    }
-
-    public Map<String, Object> getFrontmatter() {
-        return frontmatter;
-    }
-
-    public void setFrontmatter(Map<String, Object> frontmatter) {
-        this.frontmatter = frontmatter;
-    }
-
-    public List<Heading> getHeadings() {
-        return headings;
-    }
-
-    public void setHeadings(List<Heading> headings) {
-        this.headings = headings;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public List<String> getWikiLinks() {
-        return wikiLinks;
-    }
-
-    public void setWikiLinks(List<String> wikiLinks) {
-        this.wikiLinks = wikiLinks;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public String getContentWithoutFrontmatter() { return contentWithoutFrontmatter; }
+    public void setContentWithoutFrontmatter(String contentWithoutFrontmatter) { this.contentWithoutFrontmatter = contentWithoutFrontmatter; }
+    public Map<String, Object> getFrontmatter() { return frontmatter; }
+    public void setFrontmatter(Map<String, Object> frontmatter) { this.frontmatter = frontmatter; }
+    public List<Heading> getHeadings() { return headings; }
+    public void setHeadings(List<Heading> headings) { this.headings = headings; }
+    public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+    public List<String> getWikiLinks() { return wikiLinks; }
+    public void setWikiLinks(List<String> wikiLinks) { this.wikiLinks = wikiLinks; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
     @Override
     public boolean equals(Object o) {
@@ -101,38 +65,19 @@ public class ParsedMarkdown {
         private String text;
         private int lineNumber;
 
-        public Heading() {
-        }
-
+        public Heading() { }
         public Heading(int level, String text, int lineNumber) {
             this.level = level;
             this.text = text;
             this.lineNumber = lineNumber;
         }
 
-        public int getLevel() {
-            return level;
-        }
-
-        public void setLevel(int level) {
-            this.level = level;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public int getLineNumber() {
-            return lineNumber;
-        }
-
-        public void setLineNumber(int lineNumber) {
-            this.lineNumber = lineNumber;
-        }
+        public int getLevel() { return level; }
+        public void setLevel(int level) { this.level = level; }
+        public String getText() { return text; }
+        public void setText(String text) { this.text = text; }
+        public int getLineNumber() { return lineNumber; }
+        public void setLineNumber(int lineNumber) { this.lineNumber = lineNumber; }
 
         @Override
         public String toString() {

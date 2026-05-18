@@ -32,8 +32,11 @@ public class ObsidianRagApplication implements QuarkusApplication {
         LOG.info("  Obsidian RAG is ready!");
         LOG.info("  Indexing status: " + indexingService.getIndexingStatus());
         LOG.info("=".repeat(60));
+        LOG.info("  HTTP API: http://localhost:8087/api");
+        LOG.info("  MCP tools available via stdio");
+        LOG.info("=".repeat(60));
 
-        Quarkus.waitForExit();
+        Thread.currentThread().join();
         return 0;
     }
 }

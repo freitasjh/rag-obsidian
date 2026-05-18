@@ -10,8 +10,7 @@ public class SearchResult {
     private Double score;
     private Map<String, Object> metadata;
 
-    public SearchResult() {
-    }
+    public SearchResult() { }
 
     public SearchResult(String content, Double score, Map<String, Object> metadata) {
         this.content = content;
@@ -19,29 +18,12 @@ public class SearchResult {
         this.metadata = metadata;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Double getScore() {
-        return score;
-    }
-
-    public void setScore(Double score) {
-        this.score = score;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+    public Double getScore() { return score; }
+    public void setScore(Double score) { this.score = score; }
+    public Map<String, Object> getMetadata() { return metadata; }
+    public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
 
     @Override
     public boolean equals(Object o) {

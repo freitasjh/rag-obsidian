@@ -1,12 +1,15 @@
 {
   "mcpServers": {
-    "obsidian-rag": {
+    "ObsidianBrain": {
       "command": "docker",
       "args": [
-        "run", "--rm", "-i",
-        "--network", "rag-obsidian_default",
-        "-v", "/caminho/para/vault:/data/vault",
-        "-e", "OLLAMA_BASE_URL=http://ollama:11434",
+        "run",
+        "--rm",
+        "-i",
+        "--network",
+        "host",
+        "-v",
+        "/home/joao/progat/wsProjetos/atlas-admin/brain:/data/vault",
         "obsidian-rag"
       ]
     }

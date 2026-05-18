@@ -1,11 +1,11 @@
 package br.com.freitasjh.obsidianrag.obsidian.chunking;
 
 import br.com.freitasjh.obsidianrag.config.RagConfig;
-import br.com.freitasjh.obsidianrag.model.Chunk;
-import br.com.freitasjh.obsidianrag.model.ChunkMetadata;
 import br.com.freitasjh.obsidianrag.model.ParsedMarkdown;
 import br.com.freitasjh.obsidianrag.model.VaultDocument;
 import br.com.freitasjh.obsidianrag.obsidian.parser.MarkdownParser;
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.segment.TextSegment;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -24,27 +24,26 @@ public class ChunkingPipeline {
     @Inject
     RagConfig ragConfig;
 
-    public List<Chunk> process(VaultDocument document) {
-        List<Chunk> chunks = new ArrayList<>();
+    public List<TextSegment> process(VaultDocument document) {
+        List<TextSegment> segments = new ArrayList<>();
 
         ParsedMarkdown parsed = markdownParser.parse(document.getContent());
-
         List<ChunkContent> sections = splitByHeadings(parsed, document);
 
         for (int i = 0; i < sections.size(); i++) {
             ChunkContent section = sections.get(i);
 
             if (section.content().length() <= ragConfig.chunkSize()) {
-                Chunk chunk = createChunk(document, section, i, sections.size());
-                chunks.add(chunk);
+                TextSegment segment = createSegment(document, parsed, section, i, sections.size());
+                segments.add(segment);
             } else {
-                List<Chunk> subChunks = splitBySize(section, document, i, sections.size());
-                chunks.addAll(subChunks);
+                List<TextSegment> subSegments = splitBySize(document, parsed, section, i, sections.size());
+                segments.addAll(subSegments);
             }
         }
 
-        LOG.infof("Created %d chunks from document: %s", chunks.size(), document.getPath());
-        return chunks;
+        LOG.infof("Created %d segments from document: %s", segments.size(), document.getPath());
+        return segments;
     }
 
     private List<ChunkContent> splitByHeadings(ParsedMarkdown parsed, VaultDocument document) {
@@ -114,8 +113,9 @@ public class ChunkingPipeline {
         return null;
     }
 
-    private List<Chunk> splitBySize(ChunkContent section, VaultDocument document, int sectionIndex, int totalSections) {
-        List<Chunk> chunks = new ArrayList<>();
+    private List<TextSegment> splitBySize(VaultDocument document, ParsedMarkdown parsed,
+                                          ChunkContent section, int sectionIndex, int totalSections) {
+        List<TextSegment> segments = new ArrayList<>();
         String content = section.content();
         int chunkSize = ragConfig.chunkSize();
         int overlap = ragConfig.chunkOverlap();
@@ -139,54 +139,48 @@ public class ChunkingPipeline {
 
             String chunkText = content.substring(start, end).trim();
             if (!chunkText.isEmpty()) {
-                ChunkMetadata metadata = createMetadata(document, section.heading(), section.parentHeading());
-                metadata.setChunkIndex(sectionIndex * 100 + subIndex);
-                metadata.setTotalChunks(totalSections * 100);
+                Metadata metadata = buildMetadata(document, parsed, section.heading(), section.parentHeading());
+                metadata.put("chunkIndex", sectionIndex * 100 + subIndex);
+                metadata.put("totalChunks", totalSections * 100);
 
-                Chunk chunk = new Chunk();
-                chunk.setId(document.getPath() + "_chunk_" + sectionIndex + "_" + subIndex);
-                chunk.setContent(chunkText);
-                chunk.setMetadata(metadata);
-
-                chunks.add(chunk);
+                TextSegment segment = TextSegment.from(chunkText, metadata);
+                segments.add(segment);
             }
 
             start = end - overlap;
-            if (start <= chunks.getLast().getContent().length()) {
+            if (start <= segments.getLast().text().length()) {
                 break;
             }
             subIndex++;
         }
 
-        return chunks;
+        return segments;
     }
 
-    private Chunk createChunk(VaultDocument document, ChunkContent section, int index, int total) {
-        ChunkMetadata metadata = createMetadata(document, section.heading(), section.parentHeading());
-        metadata.setChunkIndex(index);
-        metadata.setTotalChunks(total);
+    private TextSegment createSegment(VaultDocument document, ParsedMarkdown parsed,
+                                      ChunkContent section, int index, int total) {
+        Metadata metadata = buildMetadata(document, parsed, section.heading(), section.parentHeading());
+        metadata.put("chunkIndex", index);
+        metadata.put("totalChunks", total);
 
-        Chunk chunk = new Chunk();
-        chunk.setId(document.getPath() + "_chunk_" + index);
-        chunk.setContent(section.content());
-        chunk.setMetadata(metadata);
-
-        return chunk;
+        return TextSegment.from(section.content(), metadata);
     }
 
-    private ChunkMetadata createMetadata(VaultDocument document, String heading, String parentHeading) {
-        ParsedMarkdown parsed = markdownParser.parse(document.getContent());
+    private Metadata buildMetadata(VaultDocument document, ParsedMarkdown parsed,
+                                   String heading, String parentHeading) {
+        Metadata metadata = new Metadata();
+        metadata.put("source", document.getPath());
+        if (heading != null) metadata.put("heading", heading);
+        if (parentHeading != null) metadata.put("parentHeading", parentHeading);
+        metadata.put("vault", document.getMetadata().getOrDefault("vault", "").toString());
 
-        ChunkMetadata metadata = new ChunkMetadata();
-        metadata.setSource(document.getPath());
-        metadata.setHeading(heading);
-        metadata.setParentHeading(parentHeading);
-        metadata.setTags(parsed.getTags());
-        metadata.setVault(document.getMetadata().get("vault").toString());
-        metadata.setLinks(parsed.getWikiLinks());
-        metadata.setFrontmatter(parsed.getFrontmatter());
+        if (parsed.getTags() != null && !parsed.getTags().isEmpty()) {
+            metadata.put("tags", String.join(",", parsed.getTags()));
+        }
+        if (parsed.getWikiLinks() != null && !parsed.getWikiLinks().isEmpty()) {
+            metadata.put("links", String.join(",", parsed.getWikiLinks()));
+        }
 
         return metadata;
     }
-
 }

@@ -11,8 +11,7 @@ public class VaultDocument {
     private String content;
     private Map<String, Object> metadata;
 
-    public VaultDocument() {
-    }
+    public VaultDocument() { }
 
     public VaultDocument(String path, String title, String content, Map<String, Object> metadata) {
         this.path = path;
@@ -21,37 +20,14 @@ public class VaultDocument {
         this.metadata = metadata;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
-    }
+    public String getPath() { return path; }
+    public void setPath(String path) { this.path = path; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+    public Map<String, Object> getMetadata() { return metadata; }
+    public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
 
     @Override
     public boolean equals(Object o) {
