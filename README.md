@@ -22,14 +22,21 @@ MCP (Model Context Protocol) server para buscar, ler e escrever notas no Obsidia
 
 ## Configuração
 
-### 1. Build
+### 1. Build e Iniciar
 
 ```bash
+# Build da imagem
 mvn package -DskipTests
 docker build -t obsidian-rag .
+
+# Sobe container persistente (modo SSE/HTTP)
+docker compose up -d
+
+# Logs
+docker compose logs -f
 ```
 
-### 2. Conectar MCP Cliente
+### 3. Conectar MCP Cliente
 
 Arquivo `mcp-server-config.json`:
 
@@ -37,17 +44,7 @@ Arquivo `mcp-server-config.json`:
 {
   "mcpServers": {
     "ObsidianBrain": {
-      "command": "docker",
-      "args": [
-        "run",
-        "--rm",
-        "-i",
-        "--network",
-        "host",
-        "-v",
-        "/caminho/para/vault:/data/vault",
-        "obsidian-rag"
-      ]
+      "url": "http://localhost:8087/mcp"
     }
   }
 }
@@ -58,6 +55,9 @@ Uso com Gemini CLI:
 ```bash
 gemini --mcp-config mcp-server-config.json
 ```
+
+> **Nota:** Agora o servidor roda em modo SSE (HTTP) em um único container persistente.
+> Múltiplos CLIs podem conectar simultaneamente sem quedas ou sobresscarga de containers.
 
 ### Variáveis de Ambiente
 
@@ -86,15 +86,17 @@ O servidor também expõe uma API REST em `http://localhost:8087`:
 
 ```
 MCP Cliente (Gemini CLI, Claude Desktop)
-    │  docker run --rm -i (STDIO)
+    │  HTTP SSE (http://localhost:8087/mcp)
     ▼
-McpToolService (Quarkus + quarkus-mcp-server-stdio)
+McpToolService (Quarkus + quarkus-mcp-server-sse)
     │
     ├── SearchService    → InMemoryEmbeddingStore (embeddings locais)
     ├── IndexingService  → VaultLoader + ChunkingPipeline
     └── VaultService     → VaultLoader (leitura/escrita no filesystem)
 
 Embedding Model: all-MiniLM-L6-v2-quantized (384 dim, roda na JVM)
+
+Container único e persistente via docker compose up -d
 ```
 
 ## Execução Local (sem Docker)

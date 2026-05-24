@@ -1,17 +1,7 @@
 {
   "mcpServers": {
     "ObsidianBrain": {
-      "command": "docker",
-      "args": [
-        "run",
-        "--rm",
-        "-i",
-        "--network",
-        "host",
-        "-v",
-        "/home/joao/progat/wsProjetos/atlas-admin/brain:/data/vault",
-        "obsidian-rag"
-      ]
+      "url": "http://localhost:8087/mcp/sse"
     }
   }
 }

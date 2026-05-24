@@ -47,8 +47,4 @@ public class SearchService {
         LOG.infof("Found %d results", results.size());
         return results;
     }
-
-    public List<SearchResult> searchWithDefaults(String query) {
-        return search(query, 5);
-    }
 }

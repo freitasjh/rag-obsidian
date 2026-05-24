@@ -5,6 +5,9 @@ services:
     environment:
       OBSIDIAN_VAULT_PATH: /data/vault
       OBSIDIAN_VAULT_NAME: brain
+      QUARKUS_HTTP_PORT: 8087
     volumes:
-      - ./vault:/data/vault
+      - /home/joao/progat/wsProjetos/atlas-admin/brain:/data/vault
+    ports:
+      - "127.0.0.1:8087:8087"
     restart: unless-stopped

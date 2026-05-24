@@ -26,12 +26,6 @@ public class VaultService {
     @Inject
     VaultLoader vaultLoader;
 
-    private final Map<String, String> documentCache = new ConcurrentHashMap<>();
-
-    public List<VaultDocument> loadAllDocuments() {
-        return vaultLoader.loadVault();
-    }
-
     public Optional<SearchResult> getDocumentByPath(String path) {
         for (VaultDocument doc : vaultLoader.loadVault()) {
             if (doc.getPath().equals(path)) {
@@ -51,27 +45,6 @@ public class VaultService {
                 .map(VaultDocument::getPath)
                 .sorted()
                 .toList();
-    }
-
-    public long getDocumentCount() {
-        return vaultLoader.countMarkdownFiles();
-    }
-
-    public void cacheDocument(String path, String content) {
-        documentCache.put(path, content);
-    }
-
-    public Optional<String> getCachedContent(String path) {
-        return Optional.ofNullable(documentCache.get(path));
-    }
-
-    public Map<String, Object> getDocumentMetadata(String path) {
-        Optional<VaultDocument> doc = vaultLoader.loadVault().stream()
-                .filter(d -> d.getPath().equals(path))
-                .findFirst();
-
-        return doc.map(VaultDocument::getMetadata)
-                .orElse(Map.of());
     }
 
     public void writeNote(String path, String content) {

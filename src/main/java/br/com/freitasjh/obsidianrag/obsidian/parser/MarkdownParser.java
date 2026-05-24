@@ -19,11 +19,6 @@ public class MarkdownParser {
     private static final Pattern TAG_PATTERN = Pattern.compile("#([a-zA-Z0-9_-]+)");
     private static final Pattern WIKI_LINK_PATTERN = Pattern.compile("\\[\\[([^\\]|]+)(?:\\|[^\\]]+)?\\]\\]");
 
-    private final Parser parser;
-
-    public MarkdownParser() {
-        this.parser = Parser.builder().build();
-    }
 
     public ParsedMarkdown parse(String content) {
         ParsedMarkdown result = new ParsedMarkdown();
