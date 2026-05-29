@@ -67,7 +67,7 @@ public class ObsidianRagApplication implements QuarkusApplication {
         LOG.info("  Obsidian RAG is ready!");
         LOG.info("  Indexing status: " + indexingService.getIndexingStatus());
         LOG.info("  HTTP API:      http://localhost:" + port + "/api");
-        LOG.info("  MCP endpoint:  http://localhost:" + port + "/mcp/sse");
+        LOG.info("  MCP endpoint:  http://localhost:" + port + "/sse");
         LOG.info("=".repeat(60));
 
         Thread.currentThread().join();
